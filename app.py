@@ -3,8 +3,6 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import plotly.express as px
-
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
     page_title="Student Performance Analytics Dashboard",
