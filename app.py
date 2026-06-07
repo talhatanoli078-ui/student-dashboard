@@ -101,16 +101,10 @@ st.download_button(
 )
 
 # ---------------- KPI CARDS ----------------
-st.subheader("📌 KPI Summary")
-
-col1, col2, col3, col4 = st.columns(4)
-
-col1.metric("👨‍🎓 Total Students", len(filtered_df))
-col2.metric("📘 Avg Math", round(filtered_df["math score"].mean(), 2))
-col3.metric("📖 Avg Reading", round(filtered_df["reading score"].mean(), 2))
-col4.metric("✍️ Avg Writing", round(filtered_df["writing score"].mean(), 2))
-
-st.divider()
+col1.metric("👨‍🎓 Students", len(filtered_df))
+col2.metric("📘 Math Avg", round(filtered_df["math score"].mean(), 1))
+col3.metric("📖 Reading Avg", round(filtered_df["reading score"].mean(), 1))
+col4.metric("✍️ Writing Avg", round(filtered_df["writing score"].mean(), 1))
 
 # ---------------- TABS ----------------
 tab1, tab2, tab3 = st.tabs(
