@@ -130,35 +130,7 @@ with tab1:
             y="math score",
             estimator="mean",
             ax=ax
-        )
-        st.pyplot(fig)
-
-    with c2:
-        st.subheader("Gender Distribution")
-
-        fig, ax = plt.subplots()
-        counts = filtered_df["gender"].value_counts()
-
-        ax.pie(
-            counts,
-            labels=counts.index,
-            autopct="%1.1f%%"
-        )
-
-        st.pyplot(fig)
-
-    st.subheader("Interactive Scatter Plot")
-
-    fig = px.scatter(
-        filtered_df,
-        x="math score",
-        y="reading score",
-        color="gender",
-        hover_data=["writing score"]
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
+        )    
 # ================= TAB 2 =================
 with tab2:
 
