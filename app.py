@@ -30,12 +30,10 @@ div[data-testid="metric-container"] {
 
 # ---------------- LOAD DATA ----------------
 
+# ---------------- LOAD DATA ----------------
 @st.cache_data
 def load_data():
-return pd.read_csv("StudentsPerformance csv.csv")
-
-df = load_data()
-
+    return pd.read_csv("StudentsPerformance csv.csv")
 # ---------------- TITLE ----------------
 
 st.title("🎓 Student Performance Analytics Dashboard")
