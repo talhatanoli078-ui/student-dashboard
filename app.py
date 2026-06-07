@@ -117,18 +117,19 @@ st.divider()
 c1, c2 = st.columns(2)
 
 with c1:
-st.subheader("Average Math Score by Gender")
+    st.subheader("Average Math Score by Gender")
 
-```
-fig, ax = plt.subplots()
-sns.barplot(
-    data=filtered_df,
-    x="gender",
-    y="math score",
-    estimator="mean",
-    ax=ax
-)
-st.pyplot(fig)
+    fig, ax = plt.subplots()
+
+    sns.barplot(
+        data=filtered_df,
+        x="gender",
+        y="math score",
+        estimator="mean",
+        ax=ax
+    )
+
+    st.pyplot(fig)
 ```
 
 with c2:
