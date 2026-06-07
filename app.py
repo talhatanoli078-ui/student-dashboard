@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -263,4 +263,3 @@ st.markdown("---")
 st.markdown(
     "© 2026 Student Performance Analytics Dashboard | Built with Streamlit"
 )
-```
