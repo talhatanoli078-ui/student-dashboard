@@ -263,4 +263,3 @@ st.markdown("---")
 st.markdown(
     "© 2026 Student Performance Analytics Dashboard | Built with Streamlit"
 )
-```
