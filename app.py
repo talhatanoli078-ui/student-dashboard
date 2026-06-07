@@ -14,11 +14,11 @@ layout="wide"
 # Load Data
 
 @st.cache_data
+@st.cache_data
 def load_data():
-return pd.read_csv("StudentsPerformance csv.csv")
+    return pd.read_csv("StudentsPerformance csv.csv")
 
 df = load_data()
-
 # Title
 
 st.title("🎓 Student Performance Dashboard")
