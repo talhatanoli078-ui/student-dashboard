@@ -1,14 +1,33 @@
+```python
 import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.express as px
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="Student Performance Dashboard",
-    page_icon="📊",
+    page_title="Student Performance Analytics Dashboard",
+    page_icon="🎓",
     layout="wide"
 )
+
+# ---------------- CUSTOM CSS ----------------
+st.markdown("""
+<style>
+.main {
+    padding-top: 1rem;
+}
+h1 {
+    color: #1E88E5;
+}
+div[data-testid="metric-container"] {
+    border: 1px solid #e6e6e6;
+    padding: 10px;
+    border-radius: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ---------------- LOAD DATA ----------------
 @st.cache_data
@@ -18,11 +37,13 @@ def load_data():
 df = load_data()
 
 # ---------------- TITLE ----------------
-st.title("📊 Student Performance Dashboard")
-st.markdown("Analyze student performance using interactive charts and filters.")
+st.title("🎓 Student Performance Analytics Dashboard")
+st.markdown(
+    "Interactive dashboard for analyzing student performance, demographics, and academic trends."
+)
 
 # ---------------- SIDEBAR ----------------
-st.sidebar.header("Filters")
+st.sidebar.header("🔍 Filters")
 
 gender = st.sidebar.multiselect(
     "Gender",
@@ -52,6 +73,15 @@ math_range = st.sidebar.slider(
     )
 )
 
+st.sidebar.markdown("---")
+st.sidebar.info("""
+📊 Student Performance Dashboard
+
+Developer: Talha
+
+Built with Streamlit
+""")
+
 # ---------------- FILTER DATA ----------------
 filtered_df = df[
     (df["gender"].isin(gender))
@@ -60,160 +90,177 @@ filtered_df = df[
     & (df["math score"].between(math_range[0], math_range[1]))
 ]
 
+# ---------------- DOWNLOAD BUTTON ----------------
+csv = filtered_df.to_csv(index=False)
+
+st.download_button(
+    label="📥 Download Filtered Data",
+    data=csv,
+    file_name="filtered_students.csv",
+    mime="text/csv"
+)
+
 # ---------------- KPI CARDS ----------------
 st.subheader("📌 KPI Summary")
 
 col1, col2, col3, col4 = st.columns(4)
 
-col1.metric("Total Students", len(filtered_df))
-col2.metric("Avg Math", round(filtered_df["math score"].mean(), 2))
-col3.metric("Avg Reading", round(filtered_df["reading score"].mean(), 2))
-col4.metric("Avg Writing", round(filtered_df["writing score"].mean(), 2))
+col1.metric("👨‍🎓 Total Students", len(filtered_df))
+col2.metric("📘 Avg Math", round(filtered_df["math score"].mean(), 2))
+col3.metric("📖 Avg Reading", round(filtered_df["reading score"].mean(), 2))
+col4.metric("✍️ Avg Writing", round(filtered_df["writing score"].mean(), 2))
 
 st.divider()
 
-# ---------------- ROW 1 ----------------
-c1, c2 = st.columns(2)
+# ---------------- TABS ----------------
+tab1, tab2, tab3 = st.tabs(
+    ["📊 Overview", "📈 Advanced Analysis", "📋 Dataset"]
+)
 
-with c1:
-    st.subheader("Bar Chart")
+# ================= TAB 1 =================
+with tab1:
 
-    fig, ax = plt.subplots()
+    c1, c2 = st.columns(2)
 
-    sns.barplot(
-        data=filtered_df,
-        x="gender",
-        y="math score",
-        estimator="mean",
-        ax=ax
-    )
+    with c1:
+        st.subheader("Average Math Score by Gender")
 
-    ax.set_title("Average Math Score by Gender")
+        fig, ax = plt.subplots()
+        sns.barplot(
+            data=filtered_df,
+            x="gender",
+            y="math score",
+            estimator="mean",
+            ax=ax
+        )
+        st.pyplot(fig)
 
-    st.pyplot(fig)
+    with c2:
+        st.subheader("Gender Distribution")
 
-with c2:
-    st.subheader("Pie Chart")
+        fig, ax = plt.subplots()
+        counts = filtered_df["gender"].value_counts()
 
-    fig, ax = plt.subplots()
+        ax.pie(
+            counts,
+            labels=counts.index,
+            autopct="%1.1f%%"
+        )
 
-    counts = filtered_df["gender"].value_counts()
+        st.pyplot(fig)
 
-    ax.pie(
-        counts,
-        labels=counts.index,
-        autopct="%1.1f%%"
-    )
+    st.subheader("Interactive Scatter Plot")
 
-    ax.set_title("Gender Distribution")
-
-    st.pyplot(fig)
-
-# ---------------- ROW 2 ----------------
-c1, c2 = st.columns(2)
-
-with c1:
-    st.subheader("Histogram")
-
-    fig, ax = plt.subplots()
-
-    sns.histplot(
-        filtered_df["math score"],
-        kde=True,
-        ax=ax
-    )
-
-    st.pyplot(fig)
-
-with c2:
-    st.subheader("Count Plot")
-
-    fig, ax = plt.subplots()
-
-    sns.countplot(
-        data=filtered_df,
-        x="test preparation course",
-        ax=ax
-    )
-
-    plt.xticks(rotation=15)
-
-    st.pyplot(fig)
-
-# ---------------- ROW 3 ----------------
-c1, c2 = st.columns(2)
-
-with c1:
-    st.subheader("Scatter Plot")
-
-    fig, ax = plt.subplots()
-
-    sns.scatterplot(
-        data=filtered_df,
+    fig = px.scatter(
+        filtered_df,
         x="math score",
         y="reading score",
-        hue="gender",
-        ax=ax
+        color="gender",
+        hover_data=["writing score"]
     )
 
-    st.pyplot(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
-with c2:
-    st.subheader("Box Plot")
+# ================= TAB 2 =================
+with tab2:
 
-    fig, ax = plt.subplots()
+    c1, c2 = st.columns(2)
 
-    sns.boxplot(
-        data=filtered_df,
-        x="gender",
-        y="writing score",
-        ax=ax
-    )
+    with c1:
+        st.subheader("Histogram")
 
-    st.pyplot(fig)
+        fig, ax = plt.subplots()
 
-# ---------------- HEATMAP ----------------
-st.subheader("Heatmap")
+        sns.histplot(
+            filtered_df["math score"],
+            kde=True,
+            ax=ax
+        )
 
-corr = filtered_df[
-    ["math score", "reading score", "writing score"]
-].corr()
+        st.pyplot(fig)
 
-fig, ax = plt.subplots(figsize=(8,5))
+    with c2:
+        st.subheader("Count Plot")
 
-sns.heatmap(
-    corr,
-    annot=True,
-    cmap="coolwarm",
-    ax=ax
-)
+        fig, ax = plt.subplots()
 
-st.pyplot(fig)
+        sns.countplot(
+            data=filtered_df,
+            x="test preparation course",
+            ax=ax
+        )
 
-# ---------------- AREA CHART ----------------
-st.subheader("Area Chart")
+        plt.xticks(rotation=15)
 
-st.area_chart(
-    filtered_df[
+        st.pyplot(fig)
+
+    c3, c4 = st.columns(2)
+
+    with c3:
+        st.subheader("Box Plot")
+
+        fig, ax = plt.subplots()
+
+        sns.boxplot(
+            data=filtered_df,
+            x="gender",
+            y="writing score",
+            ax=ax
+        )
+
+        st.pyplot(fig)
+
+    with c4:
+        st.subheader("Violin Plot")
+
+        fig, ax = plt.subplots()
+
+        sns.violinplot(
+            data=filtered_df,
+            x="gender",
+            y="math score",
+            ax=ax
+        )
+
+        st.pyplot(fig)
+
+    st.subheader("Correlation Heatmap")
+
+    corr = filtered_df[
         ["math score", "reading score", "writing score"]
-    ]
+    ].corr()
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    sns.heatmap(
+        corr,
+        annot=True,
+        cmap="coolwarm",
+        ax=ax
+    )
+
+    st.pyplot(fig)
+
+    st.subheader("Area Chart")
+
+    st.area_chart(
+        filtered_df[
+            ["math score", "reading score", "writing score"]
+        ]
+    )
+
+# ================= TAB 3 =================
+with tab3:
+
+    st.subheader("Dataset Preview")
+    st.dataframe(filtered_df)
+
+    st.subheader("Dataset Statistics")
+    st.write(filtered_df.describe())
+
+# ---------------- FOOTER ----------------
+st.markdown("---")
+st.markdown(
+    "© 2026 Student Performance Analytics Dashboard | Built with Streamlit"
 )
-
-# ---------------- VIOLIN PLOT ----------------
-st.subheader("Violin Plot")
-
-fig, ax = plt.subplots()
-
-sns.violinplot(
-    data=filtered_df,
-    x="gender",
-    y="math score",
-    ax=ax
-)
-
-st.pyplot(fig)
-
-# ---------------- DATA TABLE ----------------
-st.subheader("Dataset Preview")
-
-st.dataframe(filtered_df)
+```
